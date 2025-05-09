@@ -1,0 +1,130 @@
+---
+title: "Data visualization"
+output:
+  word_document: default
+  pdf_document: default
+date: "2025-05-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
+                      error = FALSE)
+```
+
+```{r packages, include = FALSE}
+library(tidyverse)
+library(palmerpenguins)
+library(ggthemes)
+```
+
+```{r tibble, include = FALSE}
+#Previewing some penguin data
+penguins
+```
+
+-How many rows and columns are in our dataset?
+
+```{r glimpse, echo = TRUE}
+#Showing first few observations of each variable
+glimpse(penguins)
+```
+
+**GGPLOT**
+
+-The 1st argument in ggplot is the data that we are going to use. By writing penguins into it, the graph is ready to visualize data about penguins.
+
+```{r ggplot, echo = TRUE}
+ggplot(data = penguins)
+```
+
+-The mapping argument of the ggplot() function defines how variables in your dataset are mapped to visual properties (aesthetics) of your plot. 
+
+-The mapping argument is always defined in the aes() function, and the x and y arguments of aes() specify which variables to map to the x and y axes.
+
+```{r aesthetics, echo = TRUE}
+ggplot(data = penguins, 
+       mapping = aes(x = flipper_length_mm, y = body_mass_g))
+```
+
+-To represent the data,we need to define a **geom**etrical object. These geometric objects are made available in ggplot2 with functions that start with geom_.
+
+```{r geom, echo = TRUE}
+ggplot(data = penguins, 
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+-Scatterplots are useful for displaying the relationship between two numerical variables.
+
+*In this case, we can see that penguin body mass increases with its flipper length*
+
+-We can go further and ask whether the relationship differs by species.
+
+```{r scatter, echo = TRUE}
+ggplot(data = penguins, 
+       mapping = aes(x = flipper_length_mm, y = body_mass_g, 
+                     colour = species)) +
+  geom_point()
+```
+
+-The Gentoo species are the heaviest with the longest flippers
+
+-Adding a linear curve.
+
+```{r lm, echo = TRUE}
+ggplot(data = penguins, 
+       mapping = aes(x = flipper_length_mm, y = body_mass_g, 
+                     colour = species)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+-When aesthetic mappings are defined in ggplot(), at the global level, they’re passed down to each of the subsequent geom layers of the plot. However, each geom function in ggplot2 can also take a mapping argument, which allows for aesthetic mappings at the local level that are added to those inherited from the global level. Since we want points to be colored based on species but don’t want the lines to be separated out for them, we should specify color = species for geom_point() only.
+
+```{r local, echo = TRUE}
+ggplot(data = penguins, 
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(mapping = aes(colour = species, shape = species)) +
+  geom_smooth(method = lm)
+```
+
+```{r final, echo = TRUE}
+ggplot(penguins, aes(flipper_length_mm, body_mass_g)) +
+  geom_point(aes(colour = species, shape = species)) +
+  geom_smooth(method = lm) +
+  labs(
+    title = 'Palmerpengiuns flipper length and weight',
+    subtitle = 'Relationship across 3 species',
+    x = 'Flipper length', y = 'Body mass') +
+  scale_color_colorblind()
+```
+
+```{r summary, echo = TRUE}
+str(penguins)
+```
+
+-What is the relationship between bill depth and bill length?
+
+```{r practice, echo = TRUE}
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+-There's a slight negative correlation between bill length and bill depth... but a comparison between each species proves this is false.
+
+```{r practice2, echo = TRUE}
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm, colour = species)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+-This highlights the need for further analysis. Though the general relationship is slightly negatively correlated, the relationship across each species is positively correlated.
+
+*The goal was to separate the lines according to species and therefore the categorical aesthetic mappings were defined at the global level*
+
+```{r help}
+#To get info about something, use ?
+?penguins
+```
+
