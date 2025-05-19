@@ -51,7 +51,8 @@ ggplot(data = penguins,
 ```{r geom, echo = TRUE}
 ggplot(data = penguins, 
        mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
-  geom_point()
+  #na.rm silently removes missing values. No warnings are displayed.
+  geom_point(na.rm = TRUE)
 ```
 
 -Scatterplots are useful for displaying the relationship between two numerical variables.
@@ -95,7 +96,8 @@ ggplot(penguins, aes(flipper_length_mm, body_mass_g)) +
   labs(
     title = 'Palmerpengiuns flipper length and weight',
     subtitle = 'Relationship across 3 species',
-    x = 'Flipper length', y = 'Body mass') +
+    x = 'Flipper length', y = 'Body mass',
+    caption = 'Data comes from the palmerpenguins package.') +
   scale_color_colorblind()
 ```
 
@@ -128,3 +130,51 @@ ggplot(penguins, aes(bill_length_mm, bill_depth_mm, colour = species)) +
 ?penguins
 ```
 
+```{r scat, echo = TRUE}
+ggplot(penguins, aes(bill_depth_mm, species)) +
+  geom_point()
+
+ggplot(penguins, aes(bill_depth_mm, species)) +
+  geom_boxplot()
+```
+
+-A box plot better represents the information we are looking for. 
+
+```{r recreate, echo = TRUE}
+ggplot(penguins, aes(flipper_length_mm, body_mass_g)) +
+  geom_point(aes(colour = bill_depth_mm)) +
+  geom_smooth(method = 'loess')
+```
+
+```{r b, echo=TRUE}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g, color = island)
+) +
+  geom_point() +
+  #should the confidence bounds be displayed? use se to control
+  geom_smooth(se = FALSE)
+```
+
+```{r same}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point() +
+  geom_smooth()
+
+ggplot() +
+  geom_point(
+    data = penguins,
+    mapping = aes(x = flipper_length_mm, y = body_mass_g)
+  ) +
+  geom_smooth(
+    data = penguins,
+    mapping = aes(x = flipper_length_mm, y = body_mass_g)
+  )
+```
+
+-Both graphs are the same. In the second one, the same variables are defined to the same aesthetics in both the scatter graph and the smooth line curve...
+
+-This is the same as defining the aesthetics at the global level as what is defined there is applied to all geom functions below.Since the local mappings are all identical, defining them at the global level makes it more concise.
